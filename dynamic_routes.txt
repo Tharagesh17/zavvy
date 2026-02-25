@@ -1,0 +1,7 @@
+d:\ZAVVY\zavvy\app\(dashboard)\dashboard\products\[id]
+d:\ZAVVY\zavvy\app\api\orders\[id]
+d:\ZAVVY\zavvy\app\api\products\[identifier]
+d:\ZAVVY\zavvy\app\api\shiprocket\track\[orderId]
+d:\ZAVVY\zavvy\app\checkout\[orderId]
+d:\ZAVVY\zavvy\app\l\[shortCode]
+d:\ZAVVY\zavvy\app\track\[orderId]
