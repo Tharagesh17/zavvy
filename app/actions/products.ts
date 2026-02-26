@@ -133,6 +133,7 @@ export async function addStockToVariant(variantId: string, quantityToAdd: number
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function createProduct(prev: any, fd: FormData) {
   try {
     const supabase = await createClient();
@@ -151,10 +152,10 @@ export async function createProduct(prev: any, fd: FormData) {
     const variantsJson = fd.get("variants_json") as string;
 
     let imageUrls: string[] = [];
-    try { imageUrls = JSON.parse(imagesJson || "[]") } catch (e) { }
+    try { imageUrls = JSON.parse(imagesJson || "[]") } catch { /* ignore */ }
 
     let variantsObj: Record<string, string> = {};
-    try { variantsObj = JSON.parse(variantsJson || "{}") } catch (e) { }
+    try { variantsObj = JSON.parse(variantsJson || "{}") } catch { /* ignore */ }
 
     let sizeOptions: string[] = [];
     let colorOptions: string[] = [];
@@ -168,7 +169,7 @@ export async function createProduct(prev: any, fd: FormData) {
       }
     }
 
-    const variantsArray: any[] = [];
+    const variantsArray: { size: string | null; color: string | null; stock_count: number; price_override: number | null }[] = [];
     if (sizeOptions.length === 0 && colorOptions.length === 0) {
       variantsArray.push({ size: null, color: null, stock_count: totalStock, price_override: null });
     } else {
@@ -203,11 +204,12 @@ export async function createProduct(prev: any, fd: FormData) {
 
     revalidatePath("/dashboard/products");
     return { ok: true, id: result.productId };
-  } catch (e: any) {
-    return { ok: false, error: e.message || "An error occurred." };
+  } catch (e: unknown) {
+    return { ok: false, error: e instanceof Error ? e.message : "An error occurred." };
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function updateProduct(prev: any, fd: FormData) {
   try {
     const supabase = await createClient();
@@ -225,7 +227,7 @@ export async function updateProduct(prev: any, fd: FormData) {
     const variantsJson = fd.get("variants_json") as string;
 
     let imageUrls: string[] = [];
-    try { imageUrls = JSON.parse(imagesJson || "[]") } catch (e) { }
+    try { imageUrls = JSON.parse(imagesJson || "[]") } catch { /* ignore */ }
 
     const { error: updateError } = await supabase
       .from("products")
@@ -244,8 +246,8 @@ export async function updateProduct(prev: any, fd: FormData) {
     revalidatePath("/dashboard/products");
     revalidatePath(`/products/${productId}`);
     return { ok: true, id: productId };
-  } catch (e: any) {
-    return { ok: false, error: e.message || "An error occurred." };
+  } catch (e: unknown) {
+    return { ok: false, error: e instanceof Error ? e.message : "An error occurred." };
   }
 }
 
@@ -321,8 +323,8 @@ export async function createProductLink(productId: string) {
 
     const url = `${baseUrl}/l/${shortCode}`;
     return { ok: true, shortCode, url };
-  } catch (e: any) {
-    return { ok: false, error: e.message || "Failed to create link" };
+  } catch (e: unknown) {
+    return { ok: false, error: e instanceof Error ? e.message : "Failed to create link" };
   }
 }
 
@@ -345,8 +347,8 @@ export async function deleteProduct(productId: string) {
 
     revalidatePath("/dashboard/products");
     return { ok: true };
-  } catch (e: any) {
-    return { ok: false, error: e.message || "Failed to delete product" };
+  } catch (e: unknown) {
+    return { ok: false, error: e instanceof Error ? e.message : "Failed to delete product" };
   }
 }
 

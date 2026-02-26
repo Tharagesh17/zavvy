@@ -53,9 +53,9 @@ export async function sendShipmentEmail(params: ShipmentEmailParams): Promise<{ 
         }
 
         return { ok: true };
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error("Resend error:", err);
-        return { ok: false, error: err.message };
+        return { ok: false, error: err instanceof Error ? err.message : "Unknown error" };
     }
 }
 
@@ -149,9 +149,9 @@ export async function sendPaymentApprovalEmail(params: ApprovalEmailParams): Pro
             return { ok: false, error: error.message };
         }
         return { ok: true };
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error("Approval email error:", err);
-        return { ok: false, error: err.message };
+        return { ok: false, error: err instanceof Error ? err.message : "Unknown error" };
     }
 }
 

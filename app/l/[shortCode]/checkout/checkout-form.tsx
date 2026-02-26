@@ -62,7 +62,7 @@ export function CheckoutForm({ shortCode, codEnabled, product, initialVariants =
   const addCartItem = () => {
     // Default to first option for each variant key
     const defaultVariant: Record<string, string> = {};
-    Object.entries(product.variants).forEach(([key, paramValues]) => {
+    Object.entries(product.variants || {}).forEach(([key, paramValues]) => {
       let options: string[] = [];
       if (Array.isArray(paramValues)) {
         options = paramValues;
@@ -192,7 +192,7 @@ export function CheckoutForm({ shortCode, codEnabled, product, initialVariants =
         </div>
 
         <div className="space-y-3">
-          {cartItems.map((item, index) => (
+          {cartItems.map((item) => (
             <div key={item.id} className="p-4 border rounded-lg bg-card/50 relative group">
               <div className="flex flex-wrap gap-4 items-end">
                 {hasVariants ? (

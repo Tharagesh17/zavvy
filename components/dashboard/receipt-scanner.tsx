@@ -76,9 +76,9 @@ export function ReceiptScanner({ orderId, buyerName }: ReceiptScannerProps) {
             } else {
                 toast.error("Could not read receipt clearly. Please enter details manually.");
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error(error);
-            toast.error(error.message || "Failed to scan receipt");
+            toast.error(error instanceof Error ? error.message : "Failed to scan receipt");
         } finally {
             setIsScanning(false);
         }
@@ -110,7 +110,7 @@ export function ReceiptScanner({ orderId, buyerName }: ReceiptScannerProps) {
             } else {
                 toast.error(data.error || "Failed to save tracking");
             }
-        } catch (error) {
+        } catch {
             toast.error("Network error saving tracking");
         } finally {
             setIsSaving(false);
@@ -238,7 +238,7 @@ export function ReceiptScanner({ orderId, buyerName }: ReceiptScannerProps) {
 }
 
 // Temporary Badge component inline until proper import is sorted or if it needs distinct styling inside modal
-function Badge({ children, className, variant }: any) {
+function Badge({ children, className, variant }: { children: React.ReactNode; className?: string; variant?: string }) {
     const cn = variant === "destructive" ? "bg-red-500 text-white" : variant === "outline" ? "border" : "";
     return <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${cn} ${className || ""}`}>{children}</span>;
 }

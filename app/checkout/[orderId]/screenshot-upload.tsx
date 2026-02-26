@@ -1,31 +1,51 @@
 "use client";
 
-import { useFormState, useFormStatus } from "react-dom";
-import { uploadPaymentScreenshot } from "@/app/actions/orders";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { UploadCloud } from "lucide-react";
-
-function SubmitButton() {
-    const { pending } = useFormStatus();
-    return (
-        <Button
-            type="submit"
-            className="w-full h-12 font-bold bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-md transition-all"
-            disabled={pending}
-        >
-            {pending ? "Uploading..." : "Confirm Proof"}
-        </Button>
-    );
-}
 
 export function ScreenshotUpload({ orderId }: { orderId: string }) {
-    const [state, formAction] = useFormState(uploadPaymentScreenshot, null);
+    const [error, setError] = useState<string | null>(null);
+    const [uploading, setUploading] = useState(false);
+    const [done, setDone] = useState(false);
+
+    async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+        e.preventDefault();
+        setError(null);
+        setUploading(true);
+
+        const formData = new FormData(e.currentTarget);
+        formData.append("order_id", orderId);
+
+        try {
+            const res = await fetch("/api/orders/upload-screenshot", {
+                method: "POST",
+                body: formData,
+            });
+            const data = await res.json();
+            if (!res.ok || data.error) {
+                setError(data.error || "Upload failed");
+            } else {
+                setDone(true);
+            }
+        } catch {
+            setError("Network error. Please try again.");
+        } finally {
+            setUploading(false);
+        }
+    }
+
+    if (done) {
+        return (
+            <div className="p-3 rounded-md bg-green-500/10 border border-green-500/20 text-green-500 text-xs font-medium text-center">
+                Screenshot uploaded successfully!
+            </div>
+        );
+    }
 
     return (
-        <form action={formAction} className="space-y-4">
-            <input type="hidden" name="order_id" value={orderId} />
+        <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
                 <Label htmlFor="screenshot" className="sr-only">Upload Screenshot</Label>
                 <div className="relative group cursor-pointer">
@@ -40,13 +60,19 @@ export function ScreenshotUpload({ orderId }: { orderId: string }) {
                 </div>
             </div>
 
-            {state?.ok === false && "error" in state && (
+            {error && (
                 <div className="p-3 rounded-md bg-red-500/10 border border-red-500/20 text-red-500 text-xs font-medium text-center">
-                    {state.error}
+                    {error}
                 </div>
             )}
 
-            <SubmitButton />
+            <Button
+                type="submit"
+                className="w-full h-12 font-bold bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-md transition-all"
+                disabled={uploading}
+            >
+                {uploading ? "Uploading..." : "Confirm Proof"}
+            </Button>
         </form>
     );
 }

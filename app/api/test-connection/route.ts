@@ -9,7 +9,8 @@ export async function GET() {
         const { data, error } = await supabase.auth.getUser();
         const end = Date.now();
         return NextResponse.json({ status: 'ok', duration: end - start, data, error });
-    } catch (e: any) {
-        return NextResponse.json({ status: 'error', message: e.message, stack: e.stack, cause: e.cause }, { status: 500 });
+    } catch (e: unknown) {
+        const err = e instanceof Error ? e : new Error(String(e));
+        return NextResponse.json({ status: 'error', message: err.message, stack: err.stack }, { status: 500 });
     }
 }

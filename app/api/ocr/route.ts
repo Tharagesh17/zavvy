@@ -37,7 +37,7 @@ export async function POST(req: Request) {
         const result = await extractReceiptData(buffer, file.type);
 
         return NextResponse.json(result);
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("OCR API Error:", error);
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }

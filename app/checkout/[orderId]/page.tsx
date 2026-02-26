@@ -1,8 +1,6 @@
 import { createServiceRoleClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { CheckCircle2, Lock, ArrowRight, ShieldCheck, UploadCloud } from "lucide-react";
+import { CheckCircle2, Lock } from "lucide-react";
 import Link from "next/link";
 import { UpiPaymentSection } from "./upi-payment-section";
 import { CodStatusPoller } from "./cod-status-poller";

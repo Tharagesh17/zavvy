@@ -21,20 +21,21 @@ const fetchWithRetry: typeof fetch = async (input, init) => {
       });
       clearTimeout(timeoutId);
       return response;
-    } catch (error: any) {
+    } catch (error: unknown) {
       clearTimeout(timeoutId);
 
+      const err = error as Error & { cause?: { code?: string } };
       // Retry on network errors or timeouts (ECONNRESET, ETIMEDOUT, fetch failed)
       const isRetryable =
         attempt < MAX_RETRIES &&
-        (error.name === "AbortError" || // Timeout
-          error.message.includes("fetch failed") ||
-          error.cause?.code === "ECONNRESET" ||
-          error.cause?.code === "ETIMEDOUT");
+        (err.name === "AbortError" || // Timeout
+          err.message?.includes("fetch failed") ||
+          err.cause?.code === "ECONNRESET" ||
+          err.cause?.code === "ETIMEDOUT");
 
       if (!isRetryable) throw error;
 
-      console.warn(`[Supabase] Network error (attempt ${attempt}/${MAX_RETRIES}): ${error.message}. Retrying in ${attempt * 500}ms...`);
+      console.warn(`[Supabase] Network error (attempt ${attempt}/${MAX_RETRIES}): ${err.message}. Retrying in ${attempt * 500}ms...`);
       await new Promise((r) => setTimeout(r, attempt * 500));
     }
   }
