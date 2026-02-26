@@ -41,8 +41,8 @@ export function ProductsGrid({ products }: { products: ProductRow[] }) {
       productId: product.id,
       productName: product.name,
       price: priceInr,
-      url: result.url,
-      shortCode: result.shortCode,
+      url: result.url || "",
+      shortCode: result.shortCode || "",
     });
   }, []);
 
