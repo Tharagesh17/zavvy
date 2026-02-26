@@ -1683,3 +1683,14 @@ async function getSellerProductIds(sellerId: string): Promise<string[]> {
 }
 
 console.log('⏰ Morning Brief scheduled for 9:00 AM IST daily.');
+
+// Minimal HTTP server for Render Free Web Service health checks
+import http from 'http';
+const PORT = process.env.PORT || 3000;
+http.createServer((_, res) => {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('Zavvy Telegram Bot is running');
+}).listen(PORT, () => {
+    console.log(`🌐 Health server listening on port ${PORT}`);
+});
+
