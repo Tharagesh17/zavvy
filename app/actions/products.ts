@@ -68,7 +68,6 @@ export async function addProduct(params: AddProductParams) {
         price: params.price,
         stock: totalStock, // Base stock calculation
         images: imageUrls.length > 0 ? imageUrls : null,
-        collection_id: params.collectionId || null,
         is_active: true
       })
       .select("id")
