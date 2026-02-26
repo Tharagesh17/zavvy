@@ -271,13 +271,14 @@ bot.on('callback_query', async (query: any) => {
                 return;
             }
 
-            const productName = Array.isArray(order.product) ? order.product[0]?.name : order.product?.name;
+            const productData = order.product as { name: string } | { name: string }[] | null;
+            const productName = Array.isArray(productData) ? productData[0]?.name : productData?.name;
             const method = order.payment_method === 'cod' ? '🚚 Cash on Delivery' : '💳 Manual UPI';
             const formattedAmount = (order.amount / 100).toLocaleString('en-IN');
 
             let addrStr = "No address provided.";
             if (order.buyer_address && typeof order.buyer_address === 'object') {
-                const a = order.buyer_address as any;
+                const a = order.buyer_address as Record<string, string>;
                 addrStr = `${a.line1}${a.line2 ? ', ' + a.line2 : ''}\n${a.city}, ${a.state} - ${a.pincode}`;
             }
 
