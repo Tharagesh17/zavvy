@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { logger } from "@/lib/logger";
 import { encrypt, validateUpiId } from "@/lib/crypto";
 import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
 
@@ -72,7 +73,7 @@ export async function POST(req: NextRequest) {
                 .eq("id", seller.upi_token);
 
             if (updateError) {
-                console.error("Failed to update UPI token:", updateError);
+                logger.error("Failed to update UPI token", { error: updateError.message });
                 return NextResponse.json(
                     { error: "Failed to update UPI ID" },
                     { status: 500 }
@@ -96,7 +97,7 @@ export async function POST(req: NextRequest) {
                 .single();
 
             if (insertError || !newToken) {
-                console.error("Failed to create UPI token:", insertError);
+                logger.error("Failed to create UPI token", { error: insertError?.message });
                 return NextResponse.json(
                     { error: "Failed to save UPI ID" },
                     { status: 500 }
@@ -110,7 +111,7 @@ export async function POST(req: NextRequest) {
                 .eq("id", seller.id);
 
             if (sellerUpdateError) {
-                console.error("Failed to link UPI token to seller:", sellerUpdateError);
+                logger.error("Failed to link UPI token to seller", { error: sellerUpdateError.message });
                 return NextResponse.json(
                     { error: "Failed to save UPI ID" },
                     { status: 500 }
@@ -121,7 +122,7 @@ export async function POST(req: NextRequest) {
         // SECURITY: Never return the UPI ID (encrypted or decrypted)
         return NextResponse.json({ success: true });
     } catch (error) {
-        console.error("UPI save error:", error);
+        logger.error("UPI save error", {}, error instanceof Error ? error : undefined);
         return NextResponse.json(
             { error: "Internal server error" },
             { status: 500 }

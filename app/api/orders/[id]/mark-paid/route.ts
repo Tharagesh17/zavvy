@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { logger } from "@/lib/logger";
 import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 
@@ -85,7 +86,7 @@ export async function POST(
             .eq("id", orderId);
 
         if (updateError) {
-            console.error("Failed to mark order as paid:", updateError);
+            logger.error("Failed to mark order as paid", { orderId, error: updateError.message });
             return NextResponse.json(
                 { error: "Failed to update order" },
                 { status: 500 }
@@ -97,7 +98,7 @@ export async function POST(
 
         return NextResponse.json({ success: true });
     } catch (error) {
-        console.error("Mark paid error:", error);
+        logger.error("Mark paid error", {}, error instanceof Error ? error : undefined);
         return NextResponse.json(
             { error: "Internal server error" },
             { status: 500 }

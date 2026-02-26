@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import { logger } from "@/lib/logger";
 import { withSeller, apiSuccess, apiError, parseJsonBody, isErrorResponse } from "@/lib/api-helpers";
 import { createClient } from "@/lib/supabase/server";
 import { randomBytes } from "crypto";
@@ -62,7 +63,7 @@ export const POST = withSeller(async (request: NextRequest, { seller }) => {
         .single();
 
     if (productError) {
-        console.error("[POST /api/products] Error creating product:", productError);
+        logger.error("Error creating product", { error: productError.message });
         return apiError("Failed to create product", 500);
     }
 
@@ -78,7 +79,7 @@ export const POST = withSeller(async (request: NextRequest, { seller }) => {
         });
 
     if (linkError) {
-        console.error("[POST /api/products] Error creating link:", linkError);
+        logger.error("Error creating product link", { error: linkError.message });
         // Product created but link failed - still return success
     }
 
@@ -124,7 +125,7 @@ export const GET = withSeller(async (request: NextRequest, { seller }) => {
         .range(offset, offset + limit - 1);
 
     if (error) {
-        console.error("[GET /api/products] Error fetching products:", error);
+        logger.error("Error fetching products", { error: error.message });
         return apiError("Failed to fetch products", 500);
     }
 

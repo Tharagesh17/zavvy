@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { LogisticsSquad } from '@/lib/squads/logistics';
 import { createClient } from '@supabase/supabase-js';
 import { Database } from '@/database.types.fixed';
@@ -35,15 +36,15 @@ export async function POST(req: NextRequest) {
         let shipment = null;
         try {
             shipment = await LogisticsSquad.createShipment(orderId, order.seller_id);
-            console.log('Shipment triggered for order:', orderId);
+            logger.info('Shipment triggered for order', { orderId });
         } catch (shipError: unknown) {
-            console.error('Auto-shipment failed:', shipError);
+            logger.error('Auto-shipment failed', { orderId }, shipError instanceof Error ? shipError : undefined);
         }
 
         return NextResponse.json({ success: true, shipment });
 
     } catch (err: unknown) {
-        console.error('Verification Error:', err);
+        logger.error('Verification Error', {}, err instanceof Error ? err : undefined);
         return NextResponse.json({ error: err instanceof Error ? err.message : 'Internal Server Error' }, { status: 500 });
     }
 }

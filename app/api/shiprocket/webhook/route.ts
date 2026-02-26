@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceRoleClient } from "@/lib/supabase/server";
+import { logger } from "@/lib/logger";
 
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 
@@ -21,7 +22,7 @@ async function sendTelegramMessage(chatId: string | number, text: string) {
         });
         return res.ok;
     } catch (error) {
-        console.error("Telegram API sending failed", error);
+        logger.error("Telegram API sending failed", {}, error instanceof Error ? error : undefined);
         return false;
     }
 }
@@ -34,7 +35,7 @@ export async function POST(req: NextRequest) {
     try {
         const payload = await req.json();
 
-        console.log("🔔 [Shiprocket Webhook] Received webhook payload");
+        logger.info("Shiprocket Webhook received");
 
         // Log the event type, shiprocket doesn't have a single standard event structure but usually includes current_status
         const currentStatus = payload.current_status;
@@ -65,7 +66,7 @@ export async function POST(req: NextRequest) {
             .single();
 
         if (orderError || !order) {
-            console.error("Webhook Error: Could not find order for AWB", awb);
+            logger.error("Webhook: Could not find order for AWB", { awb });
             return NextResponse.json({ error: "Order not found" }, { status: 404 });
         }
 
@@ -78,7 +79,8 @@ export async function POST(req: NextRequest) {
         // Notify if it's a COD order
         if (order.payment_method === 'cod') {
             // Find seller's telegram_chat_id
-            const sellerUserId = Array.isArray(order.sellers) ? order.sellers[0]?.user_id : order.sellers?.user_id;
+            const sellerData = order.sellers as unknown as { user_id: string } | { user_id: string }[];
+            const sellerUserId = Array.isArray(sellerData) ? sellerData[0]?.user_id : sellerData?.user_id;
 
             if (sellerUserId) {
                 const { data: profile } = await supabase
@@ -92,7 +94,7 @@ export async function POST(req: NextRequest) {
                     const message = `✅ *COD Delivery Successful!*\n\n💰 Amount to be remitted by Shiprocket: *₹${amountFormatted}*\n👤 Buyer: ${order.buyer_name}\n📦 Order ID: \`${order.id}\`\n\nThe shipment for this order has been successfully delivered.`;
 
                     await sendTelegramMessage(profile.telegram_chat_id, message);
-                    console.log(`Sent Telegram notification to ${profile.telegram_chat_id} for order ${order.id}`);
+                    logger.info("Sent Telegram notification", { chatId: profile.telegram_chat_id, orderId: order.id });
                 }
             }
         }
@@ -100,7 +102,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ success: true });
 
     } catch (error) {
-        console.error("Webhook processing error:", error);
+        logger.error("Webhook processing error", {}, error instanceof Error ? error : undefined);
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
 }

@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import { logger } from "@/lib/logger";
 import { withSeller, apiSuccess, apiError, parseJsonBody, isErrorResponse } from "@/lib/api-helpers";
 import { createShipment } from "@/lib/shiprocket";
 import { decrypt } from "@/lib/encryption";
@@ -62,7 +63,7 @@ export const POST = withSeller(async (request: NextRequest, { seller }) => {
     try {
         decryptedToken = decrypt(orderSeller.shiprocket_token);
     } catch {
-        console.error("[POST /api/shiprocket/create-shipment] Decryption failed");
+        logger.error("Shiprocket decryption failed");
         return apiError("Failed to decrypt Shiprocket credentials. Please reconnect your account.", 500);
     }
 
@@ -126,7 +127,7 @@ export const POST = withSeller(async (request: NextRequest, { seller }) => {
             .eq("id", order_id);
 
         if (updateError) {
-            console.error("[POST /api/shiprocket/create-shipment] Update error:", updateError);
+            logger.error("Shipment created but DB update failed", { orderId: order_id, error: updateError.message });
             // Shipment created but DB update failed - log for manual recovery
             return apiError("Shipment created but failed to update order. Please contact support.", 500);
         }
@@ -139,7 +140,7 @@ export const POST = withSeller(async (request: NextRequest, { seller }) => {
         });
     } catch (err: unknown) {
         const message = err instanceof Error ? err.message : "Failed to create shipment";
-        console.error("[POST /api/shiprocket/create-shipment] Shiprocket error:", message);
+        logger.error("Shiprocket shipment creation error", { error: message });
         return apiError(message, 500);
     }
 });

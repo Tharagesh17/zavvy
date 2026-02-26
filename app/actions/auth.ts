@@ -41,10 +41,10 @@ const DEV_PASSWORD = "devpassword123";
 
 export async function devLogin(): Promise<DevLoginResult> {
   const isDev = process.env.NODE_ENV === "development";
-  const skipAuth = process.env.DEV_SKIP_AUTH === "true" || process.env.NEXT_PUBLIC_DEV_SKIP_AUTH === "true";
 
-  if (!skipAuth && !isDev) {
-    return { ok: false, error: "Not enabled (requires DEV_SKIP_AUTH=true or development mode)." };
+  // SECURITY: devLogin is ONLY available in development mode, never in production
+  if (!isDev) {
+    return { ok: false, error: "Dev login is only available in development mode." };
   }
 
   const headersList = headers();
