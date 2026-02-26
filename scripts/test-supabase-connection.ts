@@ -27,7 +27,7 @@ async function testConnection() {
         console.log('Attempting to fetch data...');
         const start = Date.now();
         // detailed error info
-        const { data, error } = await supabase.from('profiles').select('count', { count: 'exact', head: true }).timeout(5000);
+        const { data, error } = await supabase.from('profiles').select('count', { count: 'exact', head: true });
         const end = Date.now();
 
         if (error) {
