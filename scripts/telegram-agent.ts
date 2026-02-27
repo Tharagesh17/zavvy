@@ -48,7 +48,7 @@ async function isAuthorizedSeller(chatId: number): Promise<boolean> {
     const { data } = await supabase
         .from('profiles')
         .select('id')
-        .eq('telegram_chat_id', chatId)
+        .eq('telegram_chat_id', chatId.toString())
         .single();
     return !!data;
 }
@@ -74,7 +74,7 @@ bot.onText(/\/start (.+)/, async (msg: any, match: any) => {
 
     const { data, error } = await supabase
         .from('profiles')
-        .update({ telegram_chat_id: chatId })
+        .update({ telegram_chat_id: chatId.toString() })
         .eq('id', startParam)
         .select('id')
         .single();
@@ -457,7 +457,7 @@ bot.on('callback_query', async (query: any) => {
             bot.answerCallbackQuery(query.id, { text: '📄 Generating label...' });
 
             // Get seller ID for this chat
-            const { data: prof } = await supabase.from('profiles').select('id').eq('telegram_chat_id', chatId).single();
+            const { data: prof } = await supabase.from('profiles').select('id').eq('telegram_chat_id', chatId.toString()).single();
             if (!prof) return;
             const { data: slr } = await supabase.from('sellers').select('id').eq('user_id', prof.id).single();
             if (!slr) return;
@@ -951,7 +951,7 @@ bot.onText(/^\/pending$/, async (msg: any) => {
     const chatId = msg.chat.id;
 
     // Check auth
-    const { data: profile } = await supabase.from('profiles').select('id').eq('telegram_chat_id', chatId).single();
+    const { data: profile } = await supabase.from('profiles').select('id').eq('telegram_chat_id', chatId.toString()).single();
     if (!profile) {
         bot.sendMessage(chatId, "⛔ You must link your account first using /start <uuid> from your dashboard.");
         return;
@@ -1035,7 +1035,7 @@ bot.onText(/^\/myproducts$/, async (msg: any) => {
     const authorized = await isAuthorizedSeller(chatId);
     if (!authorized) { bot.sendMessage(chatId, '⛔ Link your account first.'); return; }
 
-    const { data: prof } = await supabase.from('profiles').select('id').eq('telegram_chat_id', chatId).single();
+    const { data: prof } = await supabase.from('profiles').select('id').eq('telegram_chat_id', chatId.toString()).single();
     if (!prof) return;
     const { data: seller } = await supabase.from('sellers').select('id, business_name').eq('user_id', prof.id).single();
     if (!seller) return;
@@ -1076,7 +1076,7 @@ bot.onText(/^\/shiporder$/, async (msg: any) => {
     const authorized = await isAuthorizedSeller(chatId);
     if (!authorized) { bot.sendMessage(chatId, '⛔ Link your account first.'); return; }
 
-    const { data: prof } = await supabase.from('profiles').select('id').eq('telegram_chat_id', chatId).single();
+    const { data: prof } = await supabase.from('profiles').select('id').eq('telegram_chat_id', chatId.toString()).single();
     if (!prof) return;
     const { data: seller } = await supabase.from('sellers').select('id').eq('user_id', prof.id).single();
     if (!seller) return;
@@ -1125,7 +1125,7 @@ bot.onText(/^\/editproduct$/, async (msg: any) => {
     const authorized = await isAuthorizedSeller(chatId);
     if (!authorized) { bot.sendMessage(chatId, '⛔ Link your account first.'); return; }
 
-    const { data: prof } = await supabase.from('profiles').select('id').eq('telegram_chat_id', chatId).single();
+    const { data: prof } = await supabase.from('profiles').select('id').eq('telegram_chat_id', chatId.toString()).single();
     if (!prof) return;
     const { data: seller } = await supabase.from('sellers').select('id').eq('user_id', prof.id).single();
     if (!seller) return;
@@ -1159,7 +1159,7 @@ bot.onText(/^\/updateupi$/, async (msg: any) => {
     const authorized = await isAuthorizedSeller(chatId);
     if (!authorized) { bot.sendMessage(chatId, '⛔ Link your account first.'); return; }
 
-    const { data: prof } = await supabase.from('profiles').select('id').eq('telegram_chat_id', chatId).single();
+    const { data: prof } = await supabase.from('profiles').select('id').eq('telegram_chat_id', chatId.toString()).single();
     if (!prof) return;
     const { data: seller } = await supabase.from('sellers').select('id, upi_id').eq('user_id', prof.id).single();
     if (!seller) return;
@@ -1189,7 +1189,7 @@ bot.onText(/^\/search (.+)/, async (msg: any, match: any) => {
     const authorized = await isAuthorizedSeller(chatId);
     if (!authorized) { bot.sendMessage(chatId, '⛔ Link your account first.'); return; }
 
-    const { data: prof } = await supabase.from('profiles').select('id').eq('telegram_chat_id', chatId).single();
+    const { data: prof } = await supabase.from('profiles').select('id').eq('telegram_chat_id', chatId.toString()).single();
     if (!prof) return;
     const { data: seller } = await supabase.from('sellers').select('id').eq('user_id', prof.id).single();
     if (!seller) return;
@@ -1260,7 +1260,7 @@ bot.onText(/^\/addproduct$/, async (msg: any) => {
     const chatId = msg.chat.id;
 
     // Check auth - Only check for profile existence linked to telegram
-    const { data: profile } = await supabase.from('profiles').select('id').eq('telegram_chat_id', chatId).single();
+    const { data: profile } = await supabase.from('profiles').select('id').eq('telegram_chat_id', chatId.toString()).single();
     if (!profile) {
         bot.sendMessage(chatId, "⛔ You must link your account first using /start <uuid> from your dashboard.");
         return;
@@ -1365,7 +1365,7 @@ bot.on('message', async (msg: any) => {
             // Quick sales summary
             const authorized = await isAuthorizedSeller(chatId);
             if (!authorized) { bot.sendMessage(chatId, '⛔ Link your account first.'); return; }
-            const { data: prof } = await supabase.from('profiles').select('id').eq('telegram_chat_id', chatId).single();
+            const { data: prof } = await supabase.from('profiles').select('id').eq('telegram_chat_id', chatId.toString()).single();
             if (!prof) return;
             const { data: sel } = await supabase.from('sellers').select('id, business_name').eq('user_id', prof.id).single();
             if (!sel) return;
@@ -1402,7 +1402,7 @@ bot.on('message', async (msg: any) => {
             if (result.metadata.extraction_status === 'SUCCESS') {
                 const { awb_number, courier_name, buyer_name, product_name } = result.order_details;
 
-                const { data: profile } = await supabase.from('profiles').select('id').eq('telegram_chat_id', chatId).single();
+                const { data: profile } = await supabase.from('profiles').select('id').eq('telegram_chat_id', chatId.toString()).single();
                 if (!profile) { bot.sendMessage(chatId, '⛔ Link your account first.'); return; }
                 const { data: seller } = await supabase.from('sellers').select('id').eq('user_id', profile.id).single();
                 if (!seller) return;
