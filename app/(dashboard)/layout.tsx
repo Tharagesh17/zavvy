@@ -2,6 +2,7 @@ import Link from "next/link";
 import { logout } from "@/app/actions/auth";
 import { LogOut, Package, ShoppingCart, Settings, Zap, AlertCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { TelegramStatusBadge } from "@/components/dashboard/telegram-status-badge";
 
 export default function DashboardLayout({
   children,
@@ -51,7 +52,8 @@ export default function DashboardLayout({
             </Link>
           </nav>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
+          <TelegramStatusBadge />
           <form action={logout}>
             <button
               type="submit"
