@@ -7,7 +7,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { LandingBentoGrid } from "@/components/landing/landing-bento-grid";
 import { TelegramFeatures } from "@/components/landing/telegram-features";
 import { QrPreview } from "@/components/landing/qr-preview";
 
