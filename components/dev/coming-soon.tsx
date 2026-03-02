@@ -32,7 +32,7 @@ export function ComingSoonFeature({
         <CardDescription className="text-base mt-2">
           {description || 'This feature is coming soon!'}
         </CardDescription>
-        
+
         {eta && (
           <div className="flex items-center justify-center gap-2 mt-4 text-sm text-gray-600">
             <Clock className="h-4 w-4" />
@@ -40,7 +40,7 @@ export function ComingSoonFeature({
           </div>
         )}
       </CardHeader>
-      
+
       <CardContent className="space-y-6">
         {features.length > 0 && (
           <div className="bg-gray-50 rounded-lg p-4">
@@ -58,7 +58,7 @@ export function ComingSoonFeature({
             </ul>
           </div>
         )}
-        
+
         {currentTier === 'free' && (
           <div className="text-center space-y-3">
             <p className="text-sm text-gray-600">
@@ -71,7 +71,7 @@ export function ComingSoonFeature({
             </Link>
           </div>
         )}
-        
+
         {currentTier === 'pro' && eta && (
           <div className="text-center">
             <p className="text-sm text-gray-600">
@@ -85,10 +85,10 @@ export function ComingSoonFeature({
 }
 
 // Simplified version for inline use
-export function FeatureBadge({ 
+export function FeatureBadge({
   children,
   className = ''
-}: { 
+}: {
   children: React.ReactNode;
   className?: string;
 }) {
@@ -131,13 +131,14 @@ export function FeaturePreview({
           </div>
           <FeatureBadge>Pro</FeatureBadge>
         </div>
-        
+
         <p className="mt-3 text-sm text-gray-600">{description}</p>
-        
+
         {previewImage && (
           <div className="mt-4 relative">
-            <img 
-              src={previewImage} 
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={previewImage}
               alt={title}
               className="w-full h-32 object-cover rounded-lg opacity-50 group-hover:opacity-75 transition-opacity"
             />

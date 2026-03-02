@@ -161,8 +161,8 @@ export function OrderActions({ order }: OrderActionsProps) {
                     </DialogHeader>
                     <div className="space-y-4">
                         <div className="border rounded-lg overflow-hidden bg-slate-100 flex items-center justify-center p-2">
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
                             {order.screenshot_url ? (
+                                /* eslint-disable-next-line @next/next/no-img-element */
                                 <img src={order.screenshot_url} alt="Proof" className="max-h-[400px] object-contain" />
                             ) : (
                                 <p className="text-sm text-muted-foreground p-8">No screenshot available</p>

@@ -22,8 +22,6 @@ export function MagicLinkCard({
     title = "Premium Wireless Headphones",
     description = "Experience studio-quality sound with advanced noise cancellation and 30-hour battery life.",
     price = "₹1,999",
-    rating = 4.8,
-    reviewCount = 124,
     badge = "Verified Seller",
     features = [
         { label: "Delivery", value: "Available" },
