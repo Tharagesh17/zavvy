@@ -10,31 +10,33 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
+        background: '#09090b',
+        foreground: '#fafafa',
         card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
+          DEFAULT: "var(--card, #09090b)",
+          foreground: "var(--card-foreground, #fafafa)",
         },
         popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
+          DEFAULT: "var(--popover, #09090b)",
+          foreground: "var(--popover-foreground, #fafafa)",
         },
         primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
+          DEFAULT: '#10b981',
+          hover: '#059669',
+          foreground: '#ffffff',
         },
         secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
+          DEFAULT: '#4f46e5',
+          hover: '#4338ca',
+          foreground: '#ffffff',
         },
         muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
+          DEFAULT: '#18181b',
+          foreground: '#a1a1aa',
         },
         accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
+          DEFAULT: "var(--accent, #18181b)",
+          foreground: "var(--accent-foreground, #fafafa)",
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
