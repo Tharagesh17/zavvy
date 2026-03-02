@@ -5,7 +5,7 @@ export function TelegramFeatures() {
     const features = [
         {
             name: "Automated DM Replies",
-            description: "Stop typing 'Price please'. Zavvy instantly replies to Instagram and WhatsApp DMs with your catalog 24/7.",
+            description: "Stop typing 'Price please'. Zavvy instantly replies to Instagram and Telegram DMs with your catalog 24/7.",
             icon: MessageSquare,
             className: "md:col-span-2 bg-gradient-to-br from-primary/10 to-transparent",
         },
@@ -23,7 +23,7 @@ export function TelegramFeatures() {
         },
         {
             name: "Lightning Fast Setup",
-            description: "Connect your Instagram and WhatsApp in 2 minutes. No coding, no complex Shopify setups required.",
+            description: "Connect your Instagram and Telegram in 2 minutes. No coding, no complex Shopify setups required.",
             icon: Zap,
             className: "md:col-span-2 bg-gradient-to-br from-orange-500/10 to-transparent",
         },
