@@ -8,7 +8,7 @@ import {
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { LandingBentoGrid } from "@/components/landing/landing-bento-grid";
-import { TierComparison } from "@/components/landing/tier-comparison";
+import { TelegramFeatures } from "@/components/landing/telegram-features";
 import { QrPreview } from "@/components/landing/qr-preview";
 
 export default async function Home() {
@@ -34,9 +34,6 @@ export default async function Home() {
           <nav className="hidden md:flex items-center gap-10">
             <Link href="#features" className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-primary transition-colors">
               Features
-            </Link>
-            <Link href="#pricing" className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-primary transition-colors">
-              Pricing
             </Link>
           </nav>
 
@@ -115,11 +112,7 @@ export default async function Home() {
           </div>
         </section>
 
-        <section id="features">
-          <LandingBentoGrid />
-        </section>
-
-        <TierComparison />
+        <TelegramFeatures />
 
         {/* Closing CTA */}
         <section className="py-40 relative">
