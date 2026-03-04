@@ -8,6 +8,7 @@ import {
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { MagicLinkCard } from "@/components/landing/magic-link-card";
+import { TelegramFeatures } from "@/components/landing/telegram-features";
 
 export default async function Home() {
   // Read session cookie directly — no Supabase network call needed just to check login state
@@ -73,9 +74,6 @@ export default async function Home() {
               <div className="flex flex-col sm:flex-row items-center gap-4">
                 <Button asChild size="lg" className="h-16 px-10 rounded-2xl text-xl font-black bg-primary hover:bg-primary/90 text-primary-foreground shadow-[0_0_30px_rgba(16,185,129,0.3)] transition-all">
                   <Link href="/login">Launch My Storefront (Free)</Link>
-                </Button>
-                <Button asChild size="lg" variant="outline" className="h-16 px-8 rounded-2xl text-lg font-bold border-white/10 hover:bg-white/5">
-                  <Link href="/contact">Talk to our AI Co-Founder</Link>
                 </Button>
               </div>
             </div>
@@ -144,6 +142,8 @@ export default async function Home() {
             </div>
           </div>
         </section>
+
+        <TelegramFeatures />
 
         {/* Visual Flow / Steps */}
         <section className="py-24">
@@ -233,9 +233,6 @@ export default async function Home() {
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Button asChild size="lg" className="h-16 px-12 rounded-2xl text-xl font-black bg-primary hover:bg-primary/90 text-primary-foreground shadow-2xl shadow-primary/20">
                 <Link href="/login">Launch My Storefront (Free)</Link>
-              </Button>
-              <Button asChild size="lg" variant="outline" className="h-16 px-8 rounded-2xl text-lg font-bold border-white/10 hover:bg-white/5">
-                <Link href="/contact">Talk to our AI Co-Founder</Link>
               </Button>
             </div>
           </div>

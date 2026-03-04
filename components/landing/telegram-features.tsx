@@ -4,26 +4,26 @@ import { cn } from "@/lib/utils";
 export function TelegramFeatures() {
     const features = [
         {
-            name: "Automated DM Replies",
-            description: "Stop typing 'Price please'. Zavvy instantly replies to Instagram and Telegram DMs with your catalog 24/7.",
+            name: "Snap to Ship (Smart Smart OCR)",
+            description: "Just send a photo of the courier receipt. Zavvy auto-extracts the AWB number, matches the order, and notifies the buyer instantly.",
             icon: MessageSquare,
             className: "md:col-span-2 bg-gradient-to-br from-primary/10 to-transparent",
         },
         {
-            name: "Instant UPI Verification",
-            description: "No more checking your bank app. Zavvy verifies UPI payments in seconds directly within the chat.",
+            name: "Instant Approvals",
+            description: "Approve COD orders and verify manual UPI payments with a single tap. No need to open laptops or log into dashboards.",
             icon: BadgeIndianRupee,
             className: "md:col-span-1 bg-gradient-to-br from-emerald-500/10 to-transparent",
         },
         {
-            name: "Smart Bot Assistant",
-            description: "Your personal AI co-founder that captures orders, collects addresses, and updates inventory without your intervention.",
+            name: "Create Products in Chat",
+            description: "Send a photo, type the price, and your product is live. Managing your catalog has never been this effortless.",
             icon: Bot,
             className: "md:col-span-1 bg-gradient-to-br from-indigo-500/10 to-transparent",
         },
         {
-            name: "Lightning Fast Setup",
-            description: "Connect your Instagram and Telegram in 2 minutes. No coding, no complex Shopify setups required.",
+            name: "Inventory & Alerts",
+            description: "Get real-time 'Sold Out' alerts. Update prices or add stock using quick inline buttons directly inside Telegram.",
             icon: Zap,
             className: "md:col-span-2 bg-gradient-to-br from-orange-500/10 to-transparent",
         },
