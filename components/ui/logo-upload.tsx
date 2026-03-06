@@ -42,8 +42,8 @@ export function LogoUpload({
             await updateBusinessLogo(sellerId, res.url);
             setLogoUrl(res.url);
             toast.success("Store logo updated successfully!");
-        } catch (err: any) {
-            toast.error(err.message || "Failed to upload logo.");
+        } catch (err: unknown) {
+            toast.error(err instanceof Error ? err.message : "Failed to upload logo.");
         } finally {
             setIsUploading(false);
             if (fileInputRef.current) {
@@ -58,8 +58,8 @@ export function LogoUpload({
             await updateBusinessLogo(sellerId, null);
             setLogoUrl(null);
             toast.success("Store logo removed.");
-        } catch (err: any) {
-            toast.error(err.message || "Failed to remove logo.");
+        } catch (err: unknown) {
+            toast.error(err instanceof Error ? err.message : "Failed to remove logo.");
         } finally {
             setIsUploading(false);
         }
@@ -71,6 +71,7 @@ export function LogoUpload({
                 {/* Preview Avatar */}
                 <div className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full border border-slate-200 bg-slate-50">
                     {logoUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
                         <img
                             src={logoUrl}
                             alt="Store Logo"
