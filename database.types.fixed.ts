@@ -63,6 +63,7 @@ export interface Database {
                     phone: string
                     business_name: string | null
                     upi_id: string | null
+                    logo_url: string | null
                     tier: 'basic' | 'pro'
                     cod_enabled: boolean
                 }

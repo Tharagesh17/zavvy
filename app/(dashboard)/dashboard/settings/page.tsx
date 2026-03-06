@@ -96,6 +96,7 @@ export default async function SettingsPage() {
                                             sellerId={seller.id}
                                             initialBusinessName={seller.business_name}
                                             initialPhone={seller.phone}
+                                            initialLogoUrl={seller.logo_url}
                                         />
                                     </CardContent>
                                 </Card>

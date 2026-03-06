@@ -7,14 +7,16 @@ import { Label } from "@/components/ui/label";
 import { updateBusinessProfile } from "@/app/actions/settings";
 import { toast } from "sonner";
 import { Loader2, Store, Phone, Save } from "lucide-react";
+import { LogoUpload } from "@/components/ui/logo-upload";
 
 interface BusinessProfileFormProps {
     sellerId: string;
     initialBusinessName: string;
     initialPhone: string;
+    initialLogoUrl: string | null;
 }
 
-export function BusinessProfileForm({ sellerId, initialBusinessName, initialPhone }: BusinessProfileFormProps) {
+export function BusinessProfileForm({ sellerId, initialBusinessName, initialPhone, initialLogoUrl }: BusinessProfileFormProps) {
     const [isLoading, setIsLoading] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
 
@@ -35,7 +37,11 @@ export function BusinessProfileForm({ sellerId, initialBusinessName, initialPhon
 
     if (!isEditing) {
         return (
-            <div className="space-y-4">
+            <div className="space-y-6">
+                <div>
+                    <Label className="text-xs text-muted-foreground uppercase tracking-wider font-semibold block mb-3">Store Logo</Label>
+                    <LogoUpload sellerId={sellerId} initialUrl={initialLogoUrl} />
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-1">
                         <Label className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Business Name</Label>
@@ -60,7 +66,12 @@ export function BusinessProfileForm({ sellerId, initialBusinessName, initialPhon
     }
 
     return (
-        <form action={handleSubmit} className="space-y-4 animate-in fade-in zoom-in-95 duration-200">
+        <form action={handleSubmit} className="space-y-6 animate-in fade-in zoom-in-95 duration-200">
+            <div>
+                <Label className="text-xs text-muted-foreground uppercase tracking-wider font-semibold block mb-3">Store Logo</Label>
+                <LogoUpload sellerId={sellerId} initialUrl={initialLogoUrl} />
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                     <Label htmlFor="businessName">Business Name</Label>

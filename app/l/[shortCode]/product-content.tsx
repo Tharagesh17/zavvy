@@ -14,7 +14,7 @@ interface ProductContentProps {
     };
     seller: {
         business_name: string | null;
-        avatar_url: string | null;
+        logo_url: string | null;
     } | null;
     shortCode: string;
 }
@@ -29,7 +29,7 @@ function parseVariantValues(val: unknown): string[] {
 
 export function ProductContent({ product, seller, shortCode }: ProductContentProps) {
     const priceInr = product.price / 100;
-    const sellerAvatar = seller?.avatar_url || null;
+    const sellerLogo = seller?.logo_url || null;
     const sellerName = seller?.business_name || "Store";
 
     // Parse variants: { "Size": "S, M, L", "Color": "Red, Blue" }
@@ -128,10 +128,10 @@ export function ProductContent({ product, seller, shortCode }: ProductContentPro
 
             {/* Seller info */}
             <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.05]">
-                {sellerAvatar ? (
+                {sellerLogo ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
-                        src={sellerAvatar}
+                        src={sellerLogo}
                         alt={sellerName}
                         className="w-10 h-10 rounded-full object-cover ring-2 ring-primary/20 ring-offset-2 ring-offset-[#080808]"
                     />

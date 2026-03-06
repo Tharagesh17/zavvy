@@ -117,7 +117,7 @@ export default async function PublicProductPage({
               }}
               seller={seller ? {
                 business_name: seller.business_name,
-                avatar_url: seller.avatar_url,
+                logo_url: seller.logo_url,
               } : null}
               shortCode={shortCode}
             />

@@ -131,3 +131,40 @@ export async function updateBusinessProfile(sellerId: string, formData: FormData
     revalidatePath("/dashboard/settings");
     return { ok: true };
 }
+
+export async function updateBusinessLogo(sellerId: string, logoUrl: string | null) {
+    const authClient = await createClient();
+    const { data: { user } } = await authClient.auth.getUser();
+
+    if (!user) {
+        throw new Error("Unauthorized");
+    }
+
+    const supabase = createServiceRoleClient();
+
+    // Verify ownership
+    const { data: seller } = await supabase
+        .from("sellers")
+        .select("user_id")
+        .eq("id", sellerId)
+        .single();
+
+    if (!seller || seller.user_id !== user.id) {
+        throw new Error("Unauthorized");
+    }
+
+    const { error } = await supabase
+        .from("sellers")
+        .update({
+            logo_url: logoUrl
+        })
+        .eq("id", sellerId);
+
+    if (error) {
+        throw new Error(error.message);
+    }
+
+    revalidatePath("/dashboard/settings");
+    revalidatePath(`/dashboard`); // broad revalidation as logo can be everywhere
+    return { ok: true };
+}
