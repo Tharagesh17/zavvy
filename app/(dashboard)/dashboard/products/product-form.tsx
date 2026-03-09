@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { ImagePlus, Trash2, Plus, AlertCircle, Package, Tag, Layers } from "lucide-react";
 
 const MAX_IMAGE_PX = 800;
+const MAX_IMAGES = 10;
 
 type ProductRow = {
   id: string;
@@ -85,12 +86,34 @@ export function ProductFormFields({
     async (e: React.ChangeEvent<HTMLInputElement>) => {
       const files = e.target.files;
       if (!files?.length) return;
+
+      setImages((current) => {
+        const remaining = MAX_IMAGES - current.length;
+        if (remaining <= 0) {
+          setUploadMessage({ ok: false, error: `Maximum ${MAX_IMAGES} photos allowed per product.` });
+        }
+        return current;
+      });
+
       setUploading(true);
       setUploadMessage(null);
 
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         if (!file.type.startsWith("image/")) continue;
+
+        // Check limit before each upload
+        let canUpload = false;
+        setImages((current) => {
+          canUpload = current.length < MAX_IMAGES;
+          return current;
+        });
+
+        if (!canUpload) {
+          setUploadMessage({ ok: false, error: `Maximum ${MAX_IMAGES} photos allowed. Remove some to add more.` });
+          break;
+        }
+
         try {
           const compressed = await imageCompression(file, { maxWidthOrHeight: MAX_IMAGE_PX });
           const fd = new FormData();
@@ -100,7 +123,10 @@ export function ProductFormFields({
           if (!result.ok) {
             setUploadMessage({ ok: false, error: result.error });
           } else {
-            setImages((prev) => [...prev, result.url]);
+            setImages((prev) => {
+              if (prev.length >= MAX_IMAGES) return prev; // Double-check
+              return [...prev, result.url];
+            });
             setUploadMessage({ ok: true });
           }
         } catch {
@@ -230,7 +256,7 @@ export function ProductFormFields({
 
           {/* Section: Images */}
           <div className="space-y-5">
-            <SectionHeader icon={ImagePlus} label="Visuals" />
+            <SectionHeader icon={ImagePlus} label="Visuals" badge={`${images.length} / ${MAX_IMAGES}`} />
 
             <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
               {images.map((url) => (
@@ -249,31 +275,33 @@ export function ProductFormFields({
                 </div>
               ))}
 
-              {/* Upload zone */}
-              <div className="relative aspect-[3/4] rounded-xl border-2 border-dashed border-white/10 flex flex-col items-center justify-center hover:bg-white/[0.03] hover:border-primary/40 transition-all cursor-pointer group">
-                <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={onFileChange}
-                  disabled={uploading}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed z-10"
-                />
-                <div className="text-center p-2 group-hover:scale-110 transition-transform duration-300">
-                  {uploading ? (
-                    <div className="w-7 h-7 border-2 border-primary/30 border-t-primary rounded-full animate-spin mx-auto" />
-                  ) : (
-                    <>
-                      <div className="h-9 w-9 bg-white/[0.05] rounded-full flex items-center justify-center mx-auto mb-2 group-hover:bg-primary/20 transition-colors">
-                        <Plus className="w-4 h-4 text-white/40 group-hover:text-primary transition-colors" />
-                      </div>
-                      <span className="text-[9px] font-bold uppercase tracking-[0.15em] text-white/25 group-hover:text-primary/70">
-                        Add
-                      </span>
-                    </>
-                  )}
+              {/* Upload zone — hidden when limit reached */}
+              {images.length < MAX_IMAGES && (
+                <div className="relative aspect-[3/4] rounded-xl border-2 border-dashed border-white/10 flex flex-col items-center justify-center hover:bg-white/[0.03] hover:border-primary/40 transition-all cursor-pointer group">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={onFileChange}
+                    disabled={uploading}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed z-10"
+                  />
+                  <div className="text-center p-2 group-hover:scale-110 transition-transform duration-300">
+                    {uploading ? (
+                      <div className="w-7 h-7 border-2 border-primary/30 border-t-primary rounded-full animate-spin mx-auto" />
+                    ) : (
+                      <>
+                        <div className="h-9 w-9 bg-white/[0.05] rounded-full flex items-center justify-center mx-auto mb-2 group-hover:bg-primary/20 transition-colors">
+                          <Plus className="w-4 h-4 text-white/40 group-hover:text-primary transition-colors" />
+                        </div>
+                        <span className="text-[9px] font-bold uppercase tracking-[0.15em] text-white/25 group-hover:text-primary/70">
+                          Add
+                        </span>
+                      </>
+                    )}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
 
             {uploadMessage?.ok === false && (
@@ -356,11 +384,16 @@ export function ProductFormFields({
   );
 }
 
-function SectionHeader({ icon: Icon, label }: { icon: React.ComponentType<{ className?: string }>; label: string }) {
+function SectionHeader({ icon: Icon, label, badge }: { icon: React.ComponentType<{ className?: string }>; label: string; badge?: string }) {
   return (
     <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-primary/70 flex items-center gap-3">
       <Icon className="w-4 h-4 text-primary/50" />
       {label}
+      {badge && (
+        <span className="px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold text-white/40 normal-case tracking-normal">
+          {badge}
+        </span>
+      )}
       <span className="flex-1 h-px bg-gradient-to-r from-primary/10 to-transparent" />
     </h3>
   );
