@@ -248,7 +248,7 @@ export default async function Home() {
                   </div>
                   <h3 className="text-2xl font-black mb-3 text-white">AWB Auto Scanner</h3>
                   <p className="text-zinc-400 leading-relaxed mb-6 max-w-lg">
-                    Snap a photo of your courier receipt in Telegram. Zavvy's AI vision model reads the AWB tracking number, matches it to the right order, and automatically notifies your buyer with tracking details — all in 5 seconds.
+                    Snap a photo of your courier receipt in Telegram. Zavvy&apos;s AI vision model reads the AWB tracking number, matches it to the right order, and automatically notifies your buyer with tracking details — all in 5 seconds.
                   </p>
                   {/* Visual flow */}
                   <div className="flex flex-wrap items-center gap-2 text-sm">
@@ -331,7 +331,7 @@ export default async function Home() {
             <div className="text-center mb-16">
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-zinc-500 mb-4">How It Works</p>
               <h2 className="text-3xl md:text-5xl font-black">
-                From <span className="text-zinc-500">"Price?"</span> to{" "}
+                From <span className="text-zinc-500">&quot;Price?&quot;</span> to{" "}
                 <span className="text-emerald-400">Delivered</span> in 5 steps.
               </h2>
             </div>
@@ -373,7 +373,7 @@ export default async function Home() {
                   Your entire store,<br />inside <span className="text-[#2AABEE]">Telegram</span>.
                 </h2>
                 <p className="text-zinc-400 leading-relaxed mb-8">
-                  No dashboards. No laptops. Zavvy's Telegram bot is your command center. Get instant alerts, approve orders, and manage inventory from any phone, anywhere.
+                  No dashboards. No laptops. Zavvy&apos;s Telegram bot is your command center. Get instant alerts, approve orders, and manage inventory from any phone, anywhere.
                 </p>
                 <ul className="space-y-4">
                   {[
@@ -504,7 +504,7 @@ export default async function Home() {
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-zinc-500 mb-4">Pricing</p>
             <h2 className="text-3xl md:text-5xl font-black mb-5">Simple, honest pricing.</h2>
             <p className="text-zinc-400 text-lg max-w-xl mx-auto mb-14">
-              Start for free. Scale when you're ready. No credit card required.
+              Start for free. Scale when you&apos;re ready. No credit card required.
             </p>
 
             <div className="grid md:grid-cols-3 gap-5">
