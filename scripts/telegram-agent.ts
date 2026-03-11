@@ -21,6 +21,20 @@ if (!token || !supabaseUrl || !supabaseServiceKey) {
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 const bot = new TelegramBot(token, { polling: true });
 
+// ─── Global Error Handlers to Prevent Crashes ───────────────────────────────
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+process.on('uncaughtException', (err) => {
+    console.error('Uncaught Exception:', err);
+});
+bot.on('polling_error', (error) => {
+    console.error('Telegram Polling Error:', error.message || error);
+});
+bot.on('error', (error) => {
+    console.error('Telegram Bot Error:', error.message || error);
+});
+
 console.log("🤖 Zavvy Engine Starting...");
 
 // ─── Persistent Reply Keyboard ───────────────────────────────────────────────

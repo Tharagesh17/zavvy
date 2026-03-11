@@ -6,6 +6,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { cn } from "@/lib/utils";
 import { OrderActions } from "./order-actions";
 import { OrderSearch } from "./order-search";
+import { Download } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function OrdersTable({ orders }: { orders: Record<string, any>[] }) {
@@ -31,16 +33,72 @@ export function OrdersTable({ orders }: { orders: Record<string, any>[] }) {
         return true;
     });
 
+    const handleDownloadCSV = () => {
+        if (!filteredOrders.length) return;
+
+        const headers = ["Order ID", "Date", "Customer Name", "Phone", "Email", "Address Line 1", "Address Line 2", "City", "State", "Pincode", "Product", "Amount", "Payment Status", "Shipping Status"];
+        const csvRows = [headers.join(",")];
+
+        filteredOrders.forEach(order => {
+            const addr = order.buyer_address || {};
+            const date = new Date(order.created_at).toLocaleDateString('en-IN');
+            const product = Array.isArray(order.products) ? order.products[0]?.name : order.products?.name || "";
+            const amount = (order.amount / 100).toString();
+
+            const row = [
+                order.id,
+                date,
+                `"${(order.buyer_name || "").replace(/"/g, '""')}"`,
+                `"${(order.buyer_phone || "").replace(/"/g, '""')}"`,
+                `"${(order.buyer_email || "").replace(/"/g, '""')}"`,
+                `"${(addr.line1 || "").replace(/"/g, '""')}"`,
+                `"${(addr.line2 || "").replace(/"/g, '""')}"`,
+                `"${(addr.city || "").replace(/"/g, '""')}"`,
+                `"${(addr.state || "").replace(/"/g, '""')}"`,
+                `"${(addr.pincode || "").replace(/"/g, '""')}"`,
+                `"${product.replace(/"/g, '""')}"`,
+                amount,
+                order.payment_status || "pending",
+                order.shipping_status || "pending"
+            ];
+            csvRows.push(row.join(","));
+        });
+
+        const csvContent = csvRows.join("\\n");
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", `customer_addresses_${new Date().toISOString().split('T')[0]}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    };
+
     return (
         <div className="space-y-6">
             {/* Search + Filter Row */}
             <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-                <OrderSearch onResults={handleSearchResults} onClear={handleSearchClear} />
-                {searchResults !== null && (
-                    <span className="text-xs text-muted-foreground">
-                        {searchResults.length} result{searchResults.length !== 1 ? 's' : ''} found
-                    </span>
-                )}
+                <div className="flex items-center gap-4">
+                    <OrderSearch onResults={handleSearchResults} onClear={handleSearchClear} />
+                    {searchResults !== null && (
+                        <span className="text-xs text-muted-foreground mr-4">
+                            {searchResults.length} result{searchResults.length !== 1 ? 's' : ''} found
+                        </span>
+                    )}
+                </div>
+
+                <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex items-center gap-2"
+                    onClick={handleDownloadCSV}
+                    disabled={filteredOrders.length === 0}
+                >
+                    <Download className="h-4 w-4" />
+                    Download CSV
+                </Button>
             </div>
 
             {/* Filter Tabs */}

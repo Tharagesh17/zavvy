@@ -4,6 +4,7 @@ import { createServiceRoleClient, createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { verifyOrderOwnership } from "@/lib/security";
+import { sendPaymentApprovalEmail } from "@/lib/resend";
 import { sanitizeString, normalizePhone } from "@/lib/validation";
 import { logger } from "@/lib/logger";
 
@@ -419,6 +420,29 @@ export async function approveOrder(orderId: string): Promise<OrderApprovalResult
 
     revalidatePath("/dashboard/orders");
     logger.info("Order approved", { orderId, sellerId: ownershipResult.order?.seller_id, requestId });
+
+    // Send approval email to buyer
+    try {
+      const { data: ord } = await supabase.from('orders')
+        .select('buyer_email, buyer_name, amount, product_id, seller_id')
+        .eq('id', orderId).single();
+
+      if (ord?.buyer_email) {
+        const { data: prod } = await supabase.from('products').select('name').eq('id', ord.product_id).single();
+        const { data: slr } = await supabase.from('sellers').select('business_name').eq('id', ord.seller_id).single();
+
+        await sendPaymentApprovalEmail({
+          buyerEmail: ord.buyer_email,
+          buyerName: ord.buyer_name,
+          productName: prod?.name,
+          orderAmount: ord.amount,
+          sellerName: slr?.business_name,
+          orderId,
+        });
+      }
+    } catch (emailErr) {
+      logger.error('Approval email error:', {}, emailErr as Error);
+    }
 
     return { success: true };
   } catch (error) {
