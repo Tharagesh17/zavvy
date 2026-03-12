@@ -644,7 +644,7 @@ export default async function Home() {
             <div className="flex gap-8">
               <Link href="#" className="text-[11px] font-bold uppercase tracking-widest text-zinc-600 hover:text-white transition-colors">Privacy</Link>
               <Link href="#" className="text-[11px] font-bold uppercase tracking-widest text-zinc-600 hover:text-white transition-colors">Terms</Link>
-              <Link href="#" className="text-[11px] font-bold uppercase tracking-widest text-zinc-600 hover:text-white transition-colors">Contact</Link>
+              <a href="mailto:support@zavvyai.shop" className="text-[11px] font-bold uppercase tracking-widest text-zinc-600 hover:text-white transition-colors">Contact: support@zavvyai.shop</a>
             </div>
           </div>
         </div>
