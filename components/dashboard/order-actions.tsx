@@ -4,8 +4,10 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Loader2, Truck, Eye, Check, X } from "lucide-react";
+import { Loader2, Truck, Eye, Check, X, Package } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { ReceiptScanner } from "./receipt-scanner";
+import { Badge } from "@/components/ui/badge";
 
 interface OrderActionsProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -19,7 +21,7 @@ export function OrderActions({ order }: OrderActionsProps) {
 
     const isPaid = order.payment_status === 'paid' || order.payment_status === 'verified';
     const isNeedsReview = order.payment_status === 'needs_review' || order.payment_status === 'awaiting_approval';
-    const isShipped = order.shipping_status === 'shipped';
+    const isShipped = order.shipping_status === 'shipped' || !!order.awb_code || !!order.awb_number;
 
     const handleShip = async () => {
         setLoading(true);
@@ -113,36 +115,51 @@ export function OrderActions({ order }: OrderActionsProps) {
     };
 
     if (isShipped) {
+        const awb = order.awb_code || order.awb_number;
         return (
-            <div className="flex gap-2">
-                <Button variant="outline" size="sm" asChild>
-                    <a href={order.tracking_url || "#"} target="_blank" rel="noopener noreferrer">
-                        <Truck className="mr-2 h-3 w-3" />
-                        Track
-                    </a>
-                </Button>
-                <Button variant="outline" size="sm" asChild>
-                    <a href={`/api/orders/${order.id}/label`} target="_blank" rel="noopener noreferrer">
-                        📄 Label
-                    </a>
-                </Button>
+            <div className="flex flex-col items-end gap-2">
+                <div className="flex gap-2">
+                    {order.tracking_url ? (
+                        <Button variant="outline" size="sm" asChild>
+                            <a href={order.tracking_url} target="_blank" rel="noopener noreferrer">
+                                <Truck className="mr-2 h-3 w-3" />
+                                Track
+                            </a>
+                        </Button>
+                    ) : (
+                        <Badge variant="outline" className="font-mono text-[10px] bg-slate-50">
+                            AWB: {awb}
+                        </Badge>
+                    )}
+                    {order.tracking_url && (
+                        <Button variant="outline" size="sm" asChild>
+                            <a href={`/api/orders/${order.id}/label`} target="_blank" rel="noopener noreferrer">
+                                📄 Label
+                            </a>
+                        </Button>
+                    )}
+                </div>
+                {order.courier_name && (
+                    <span className="text-[10px] text-muted-foreground">via {order.courier_name}</span>
+                )}
             </div>
         );
     }
 
     if (isPaid) {
-        // Show Ship Button (Pro Auto-ships, but manual trigger for verified/failed)
-        // Or if Free tier verified.
         return (
-            <Button
-                size="sm"
-                className="bg-indigo-600 hover:bg-indigo-700 text-white"
-                onClick={handleShip}
-                disabled={loading}
-            >
-                {loading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Truck className="mr-2 h-3 w-3" />}
-                Ship via Shiprocket
-            </Button>
+            <div className="flex flex-col gap-2 min-w-[140px]">
+                <Button
+                    size="sm"
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white w-full"
+                    onClick={handleShip}
+                    disabled={loading}
+                >
+                    {loading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Package className="mr-2 h-3 w-3" />}
+                    Shiprocket
+                </Button>
+                <ReceiptScanner orderId={order.id} buyerName={order.buyer_name} />
+            </div>
         );
     }
 
