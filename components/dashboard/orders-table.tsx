@@ -64,7 +64,7 @@ export function OrdersTable({ orders }: { orders: Record<string, any>[] }) {
             csvRows.push(row.join(","));
         });
 
-        const csvContent = csvRows.join("\\n");
+        const csvContent = csvRows.join("\n");
         const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");

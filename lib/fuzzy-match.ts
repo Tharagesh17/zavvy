@@ -30,8 +30,8 @@ export async function findMatchingOrders(
 
     const { data, error } = await supabase.rpc('find_matching_order', {
         p_seller_id: sellerId,
-        p_buyer_name: buyerName,
-        p_product_name: productName || null,
+        p_buyer_name: buyerName || '',
+        p_product_name: productName || '',
     });
 
     if (error) {
