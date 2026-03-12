@@ -30,6 +30,7 @@ export function ReceiptScanner({ orderId, buyerName }: ReceiptScannerProps) {
 
     const [isScanning, setIsScanning] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+    const [isManualEntry, setIsManualEntry] = useState(false);
 
     const [scanResult, setScanResult] = useState<OcrExtractionResult | null>(null);
 
@@ -123,6 +124,7 @@ export function ReceiptScanner({ orderId, buyerName }: ReceiptScannerProps) {
         setScanResult(null);
         setAwb("");
         setCourier("");
+        setIsManualEntry(false);
     };
 
     // WhatsApp Intent Generator
@@ -154,33 +156,52 @@ export function ReceiptScanner({ orderId, buyerName }: ReceiptScannerProps) {
                 </DialogHeader>
 
                 <div className="grid gap-4 py-4">
-                    {!previewUrl ? (
-                        <div className="flex items-center justify-center w-full">
-                            <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-slate-50 border-slate-300 hover:bg-slate-100 dark:bg-slate-800 dark:border-slate-600 dark:hover:bg-slate-700">
-                                <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                    <ScanLine className="w-8 h-8 mb-3 text-slate-400" />
-                                    <p className="mb-2 text-sm text-slate-500"><span className="font-semibold">Click to upload</span> or drag and drop</p>
-                                    <p className="text-xs text-slate-500">PNG, JPG up to 5MB</p>
+                    {!previewUrl && !isManualEntry ? (
+                        <div className="flex flex-col gap-4">
+                            <div className="flex items-center justify-center w-full">
+                                <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-slate-50 border-slate-300 hover:bg-slate-100 dark:bg-slate-800 dark:border-slate-600 dark:hover:bg-slate-700">
+                                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                        <ScanLine className="w-8 h-8 mb-3 text-slate-400" />
+                                        <p className="mb-2 text-sm text-slate-500"><span className="font-semibold">Click to upload receipt</span></p>
+                                        <p className="text-xs text-slate-500">Auto-extract AWB and Courier</p>
+                                    </div>
+                                    <input id="dropzone-file" type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
+                                </label>
+                            </div>
+                            <div className="relative">
+                                <div className="absolute inset-0 flex items-center">
+                                    <span className="w-full border-t" />
                                 </div>
-                                <input id="dropzone-file" type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
-                            </label>
+                                <div className="relative flex justify-center text-xs uppercase">
+                                    <span className="bg-background px-2 text-muted-foreground">Or</span>
+                                </div>
+                            </div>
+                            <Button
+                                variant="outline"
+                                className="w-full border-indigo-200 text-indigo-700 hover:bg-indigo-50"
+                                onClick={() => setIsManualEntry(true)}
+                            >
+                                Enter Tracking Manually
+                            </Button>
                         </div>
                     ) : (
                         <div className="space-y-4">
-                            <div className="relative rounded-md overflow-hidden bg-slate-100 flex justify-center items-center h-48 border">
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img src={previewUrl} alt="Receipt preview" className="max-h-full object-contain" />
-                                <Button
-                                    variant="destructive"
-                                    size="icon"
-                                    className="absolute top-2 right-2 h-6 w-6 rounded-full"
-                                    onClick={reset}
-                                >
-                                    <X className="h-3 w-3" />
-                                </Button>
-                            </div>
+                            {previewUrl && (
+                                <div className="relative rounded-md overflow-hidden bg-slate-100 flex justify-center items-center h-48 border">
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                    <img src={previewUrl} alt="Receipt preview" className="max-h-full object-contain" />
+                                    <Button
+                                        variant="destructive"
+                                        size="icon"
+                                        className="absolute top-2 right-2 h-6 w-6 rounded-full"
+                                        onClick={reset}
+                                    >
+                                        <X className="h-3 w-3" />
+                                    </Button>
+                                </div>
+                            )}
 
-                            {!scanResult ? (
+                            {!scanResult && previewUrl ? (
                                 <Button className="w-full" onClick={handleScan} disabled={isScanning}>
                                     {isScanning ? (
                                         <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Analyzing Receipt with AI...</>
@@ -190,18 +211,26 @@ export function ReceiptScanner({ orderId, buyerName }: ReceiptScannerProps) {
                                 </Button>
                             ) : (
                                 <div className="space-y-3 bg-slate-50 p-3 rounded-lg border">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        {scanResult.metadata.extraction_status === "SUCCESS" ? (
-                                            <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100 border-none">
-                                                <Check className="h-3 w-3 mr-1" /> Confidence: {Math.round(scanResult.metadata.confidence_score * 100)}%
-                                            </Badge>
-                                        ) : (
-                                            <Badge variant="destructive">Extraction Failed (Enter Manually)</Badge>
-                                        )}
-                                        {scanResult.metadata.is_handwritten && (
-                                            <Badge variant="outline" className="text-xs">Handwritten</Badge>
-                                        )}
-                                    </div>
+                                    {(scanResult || isManualEntry) && (
+                                        <div className="flex items-center gap-2 mb-2">
+                                            {scanResult ? (
+                                                scanResult.metadata.extraction_status === "SUCCESS" ? (
+                                                    <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100 border-none">
+                                                        <Check className="h-3 w-3 mr-1" /> Confidence: {Math.round(scanResult.metadata.confidence_score * 100)}%
+                                                    </Badge>
+                                                ) : (
+                                                    <Badge variant="destructive">Extraction Failed (Enter Manually)</Badge>
+                                                )
+                                            ) : (
+                                                <Badge className="bg-indigo-100 text-indigo-800 border-none">
+                                                    Manual Entry Mode
+                                                </Badge>
+                                            )}
+                                            {scanResult?.metadata.is_handwritten && (
+                                                <Badge variant="outline" className="text-xs">Handwritten</Badge>
+                                            )}
+                                        </div>
+                                    )}
 
                                     <div className="space-y-1">
                                         <Label htmlFor="awb">AWB / Tracking Number *</Label>
