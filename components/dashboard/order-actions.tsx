@@ -158,7 +158,11 @@ export function OrderActions({ order }: OrderActionsProps) {
                     {loading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Package className="mr-2 h-3 w-3" />}
                     Shiprocket
                 </Button>
-                <ReceiptScanner orderId={order.id} buyerName={order.buyer_name} />
+                <ReceiptScanner 
+                    orderId={order.id} 
+                    buyerName={order.buyer_name} 
+                    buyerPhone={order.buyer_phone}
+                />
             </div>
         );
     }

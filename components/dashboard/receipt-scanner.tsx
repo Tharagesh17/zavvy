@@ -20,9 +20,10 @@ import { OcrExtractionResult } from "@/lib/gemini";
 interface ReceiptScannerProps {
     orderId: string;
     buyerName: string;
+    buyerPhone?: string;
 }
 
-export function ReceiptScanner({ orderId, buyerName }: ReceiptScannerProps) {
+export function ReceiptScanner({ orderId, buyerName, buyerPhone }: ReceiptScannerProps) {
     const router = useRouter();
     const [isOpen, setIsOpen] = useState(false);
     const [file, setFile] = useState<File | null>(null);
@@ -133,7 +134,15 @@ export function ReceiptScanner({ orderId, buyerName }: ReceiptScannerProps) {
             ? `https://shiprocket.co/tracking/${awb}`
             : "Check tracking on courier website."
             }`;
-        return encodeURIComponent(text);
+        
+        // Clean phone number (strip spaces, +, etc)
+        const cleanPhone = buyerPhone?.replace(/\D/g, "");
+        const phonePrefix = cleanPhone?.startsWith("91") ? "" : "91"; // Default to India if no prefix
+        
+        return {
+            text: encodeURIComponent(text),
+            phone: cleanPhone ? `${phonePrefix}${cleanPhone}` : ""
+        };
     };
 
     return (
@@ -252,7 +261,13 @@ export function ReceiptScanner({ orderId, buyerName }: ReceiptScannerProps) {
                                         variant="outline"
                                         className="w-full mt-2 text-green-600 border-green-200 hover:bg-green-50"
                                         disabled={!awb}
-                                        onClick={() => window.open(`https://wa.me/?text=${generateWhatsAppMessage()}`, '_blank')}
+                                        onClick={() => {
+                                            const { text, phone } = generateWhatsAppMessage();
+                                            const url = phone 
+                                                ? `https://wa.me/${phone}?text=${text}`
+                                                : `https://wa.me/?text=${text}`;
+                                            window.open(url, '_blank');
+                                        }}
                                     >
                                         Notify Buyer via WhatsApp
                                     </Button>
