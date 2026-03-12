@@ -169,7 +169,7 @@ bot.on('callback_query', async (query: any) => {
             const { error: appUpiErr } = await supabase
                 .from('orders')
                 .update({
-                    payment_status: 'paid',
+                    payment_status: 'verified',
                     order_status: 'confirmed',
                     seller_approved_at: new Date().toISOString(),
                     updated_at: new Date().toISOString(),
@@ -344,7 +344,7 @@ bot.on('callback_query', async (query: any) => {
 
             // Update order
             await supabase.from('orders').update({
-                awb_number: awbNumber,
+                awb_code: awbNumber,
                 courier_name: courierName,
                 order_status: 'shipped',
                 updated_at: new Date().toISOString()
@@ -1102,8 +1102,8 @@ bot.onText(/^\/shiporder$/, async (msg: any) => {
         .select('id, buyer_name, amount, product_id, created_at')
         .eq('seller_id', seller.id)
         .in('order_status', ['confirmed', 'processing', 'pending'])
-        .is('awb_number', null)
-        .in('payment_status', ['verified', 'paid', 'pending'])
+        .is('awb_code', null)
+        .in('payment_status', ['verified', 'paid', 'pending', 'awaiting_approval', 'needs_review'])
         .order('created_at', { ascending: true })
         .limit(10);
 
@@ -1529,7 +1529,7 @@ bot.on('message', async (msg: any) => {
         const awb = (state as any).awb;
 
         await supabase.from('orders').update({
-            awb_number: awb,
+            awb_code: awb,
             courier_name: courier,
             order_status: 'shipped',
             updated_at: new Date().toISOString()
@@ -1632,7 +1632,7 @@ cron.schedule('30 3 * * *', async () => {
                     .select('id')
                     .eq('seller_id', seller.id)
                     .in('order_status', ['confirmed', 'processing'])
-                    .is('awb_number', null);
+                    .is('awb_code', null);
 
                 // Query: UPI payments awaiting approval
                 const { data: needsApproval } = await supabase

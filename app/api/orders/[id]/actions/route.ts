@@ -88,7 +88,7 @@ export async function POST(
             // Seller manually updates tracking details (e.g. from OCR scanner)
             // @ts-expect-error dynamic update keys for new db columns
             await supabaseAdmin.from('orders').update({
-                awb_number: data.awb_number,
+                awb_code: data.awb_code || data.awb_number,
                 courier_name: data.courier_name,
                 order_status: 'shipped',
                 updated_at: new Date().toISOString()

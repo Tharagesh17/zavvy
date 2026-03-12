@@ -97,7 +97,7 @@ export function ReceiptScanner({ orderId, buyerName }: ReceiptScannerProps) {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     action: "update_tracking",
-                    awb_number: awb,
+                    awb_code: awb,
                     courier_name: courier,
                 }),
             });
