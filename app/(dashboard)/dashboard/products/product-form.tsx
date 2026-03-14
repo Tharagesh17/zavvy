@@ -87,29 +87,24 @@ export function ProductFormFields({
       const files = e.target.files;
       if (!files?.length) return;
 
-      setImages((current) => {
-        const remaining = MAX_IMAGES - current.length;
-        if (remaining <= 0) {
-          setUploadMessage({ ok: false, error: `Maximum ${MAX_IMAGES} photos allowed per product.` });
-        }
-        return current;
-      });
-
       setUploading(true);
       setUploadMessage(null);
+
+      // We use a local count to track images across the loop
+      // because state updates are asynchronous.
+      let currentCount = images.length;
+
+      if (currentCount >= MAX_IMAGES) {
+        setUploadMessage({ ok: false, error: `Maximum ${MAX_IMAGES} photos allowed. Remove some to add more.` });
+        setUploading(false);
+        return;
+      }
 
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         if (!file.type.startsWith("image/")) continue;
 
-        // Check limit before each upload
-        let canUpload = false;
-        setImages((current) => {
-          canUpload = current.length < MAX_IMAGES;
-          return current;
-        });
-
-        if (!canUpload) {
+        if (currentCount >= MAX_IMAGES) {
           setUploadMessage({ ok: false, error: `Maximum ${MAX_IMAGES} photos allowed. Remove some to add more.` });
           break;
         }
@@ -123,10 +118,8 @@ export function ProductFormFields({
           if (!result.ok) {
             setUploadMessage({ ok: false, error: result.error });
           } else {
-            setImages((prev) => {
-              if (prev.length >= MAX_IMAGES) return prev; // Double-check
-              return [...prev, result.url];
-            });
+            setImages((prev) => [...prev, result.url]);
+            currentCount++; // Update local count for the next iteration
             setUploadMessage({ ok: true });
           }
         } catch {
@@ -136,7 +129,7 @@ export function ProductFormFields({
       setUploading(false);
       e.target.value = "";
     },
-    []
+    [images.length] // Re-calculate if current images change
   );
 
   const removeImage = useCallback((url: string) => {
