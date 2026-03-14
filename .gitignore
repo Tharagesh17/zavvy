@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+node_modules/
 /.pnp
 .pnp.js
 .yarn/install-state.gz
@@ -11,7 +12,9 @@
 
 # next.js
 /.next/
+.next/
 /out/
+out/
 
 # production
 /build
@@ -20,17 +23,39 @@
 .DS_Store
 *.pem
 
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# Python virtual environment (should never be committed)
+.venv/
+venv/
+__pycache__/
+*.pyc
 
-# local env files
+# Debug and build logs (should never be committed)
+*.log
+build.log
+build_error.txt
+build_log_2.txt
+build_result.txt
+debug_output.json
+debug_output.txt
+lint_output.txt
+result.txt
+tsc_*.log
+tsc_*.txt
+vitest_*.log
+test_debug.log
+telegram.log
+dynamic_routes.txt
+full_dynamic_map.txt
+app_files.txt
+
+# Temporary files
+tmp_*.json
+
+# Environment files
 .env
+.env.local
+.env.production
 .env*.local
-.env.development.local
-.env.test.local
-.env.production.local
 
 # vercel
 .vercel
@@ -45,6 +70,3 @@ zavvy-marketing/
 # agent config
 .agent/
 .gemini/
-
-# build logs
-build_log.txt
