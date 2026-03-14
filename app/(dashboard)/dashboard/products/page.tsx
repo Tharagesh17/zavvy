@@ -22,7 +22,7 @@ async function ProductsData() {
 
   const { data: products } = await db
     .from("products")
-    .select("id, name, description, price, stock, images, is_active, created_at")
+    .select("id, name, description, price, stock, images, is_active, created_at, orders(count)")
     .eq("seller_id", seller.id)
     .order("created_at", { ascending: false });
 

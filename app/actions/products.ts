@@ -352,6 +352,30 @@ export async function deleteProduct(productId: string) {
   }
 }
 
+export async function toggleProductStatus(productId: string, isActive: boolean) {
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { ok: false, error: "Unauthorized" };
+
+    const { data: seller } = await supabase.from("sellers").select("id").eq("user_id", user.id).single();
+    if (!seller) return { ok: false, error: "Seller profile not found." };
+
+    const { error } = await supabase
+      .from("products")
+      .update({ is_active: isActive })
+      .eq("id", productId)
+      .eq("seller_id", seller.id);
+
+    if (error) throw new Error(error.message);
+
+    revalidatePath("/dashboard/products");
+    return { ok: true };
+  } catch (e: unknown) {
+    return { ok: false, error: e instanceof Error ? e.message : "Failed to update product status" };
+  }
+}
+
 export async function incrementLinkClicks(shortCode: string) {
   try {
     const supabase = createServiceRoleClient();

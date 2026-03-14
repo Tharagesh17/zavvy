@@ -1,6 +1,6 @@
 "use client";
 
-import { createProductLink, deleteProduct } from "@/app/actions/products";
+import { createProductLink, deleteProduct, toggleProductStatus } from "@/app/actions/products";
 import type { Product } from "@/types/database";
 import Image from "next/image";
 import Link from "next/link";
@@ -13,8 +13,12 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
+import { ShoppingCart, Package, AlertCircle } from "lucide-react";
 
-type ProductRow = Pick<Product, "id" | "name" | "description" | "price" | "stock" | "images" | "is_active" | "created_at">;
+type ProductRow = Pick<Product, "id" | "name" | "description" | "price" | "stock" | "images" | "is_active" | "created_at"> & {
+  orders: { count: number }[];
+};
 
 export function ProductsGrid({ products }: { products: ProductRow[] }) {
   const router = useRouter();
@@ -58,6 +62,12 @@ export function ProductsGrid({ products }: { products: ProductRow[] }) {
   const deleteOne = useCallback(async (id: string, name: string) => {
     if (!confirm(`Are you sure you want to delete "${name}"? This cannot be undone.`)) return;
     const result = await deleteProduct(id);
+    if (result.ok) router.refresh();
+    else alert(result.error);
+  }, [router]);
+
+  const onToggleActive = useCallback(async (id: string, current: boolean) => {
+    const result = await toggleProductStatus(id, !current);
     if (result.ok) router.refresh();
     else alert(result.error);
   }, [router]);
@@ -139,10 +149,41 @@ export function ProductsGrid({ products }: { products: ProductRow[] }) {
               </div>
 
               <CardContent className="p-4">
-                <div className="flex justify-between items-start gap-2 mb-1">
-                  <h3 className="font-medium text-foreground truncate" title={p.name}>{p.name}</h3>
+                <div className="flex justify-between items-start gap-2 mb-2">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-foreground truncate text-base" title={p.name}>{p.name}</h3>
+                    <div className="flex items-center gap-2 mt-1">
+                      <Badge variant="outline" className="h-5 px-1.5 text-[10px] flex items-center gap-1 border-primary/20 bg-primary/5 text-primary-foreground font-medium">
+                        <ShoppingCart className="h-2.5 w-2.5" />
+                        {p.orders?.[0]?.count || 0} orders
+                      </Badge>
+                      <Badge variant="outline" className={cn(
+                        "h-5 px-1.5 text-[10px] flex items-center gap-1 border-muted bg-muted/5 font-medium",
+                        p.stock <= 5 ? "text-amber-400 border-amber-400/30" : "text-muted-foreground"
+                      )}>
+                        <Package className="h-2.5 w-2.5" />
+                        {p.stock} units
+                      </Badge>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 pt-0.5">
+                    <Switch
+                      checked={p.is_active}
+                      onCheckedChange={() => onToggleActive(p.id, p.is_active)}
+                      className="data-[state=checked]:bg-primary h-5 w-9 scale-90"
+                    />
+                  </div>
                 </div>
-                <p className="font-semibold text-lg text-primary tabular-nums">₹{priceInr.toFixed(2)}</p>
+                <div className="flex items-center justify-between mt-3">
+                  <p className="font-bold text-xl text-primary tabular-nums">
+                    ₹{Math.floor(priceInr).toLocaleString()}
+                  </p>
+                  {!p.is_active && (
+                    <Badge variant="outline" className="text-[10px] py-0 border-zinc-700 text-zinc-500 bg-transparent">
+                      Inactive
+                    </Badge>
+                  )}
+                </div>
               </CardContent>
 
               <CardFooter className="p-4 pt-0">
